@@ -12,7 +12,7 @@ phases:
       - echo "Logging in to Amazon ECR..."
       # AWSアカウントIDとリージョンをCodeBuildの環境変数から取得
       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-      - AWS_REGION=$(aws configure get region)
+      - AWS_REGION=${AWS_DEFAULT_REGION}
       # ECRリポジトリの完全なURIを定義
       - REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api-repository
       # Dockerログイン
