@@ -1,0 +1,53 @@
+version: 0.2
+
+# 環境変数はbuildspec内で動的に設定することをお勧めします。
+# env:
+#   variables:
+#     # ECR_REPOSITORY を env: variables: に書く代わりに、pre_buildで動的に生成します。
+#     # これはAWSアカウントIDやリージョンが環境によって変わる可能性があるためです。
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging in to Amazon ECR..."
+      # AWSアカウントIDとリージョンをCodeBuildの環境変数から取得
+      - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - AWS_REGION=$(aws configure get region)
+      # ECRリポジトリの完全なURIを定義
+      - REPOSITORY_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/api-repository
+      # Dockerログイン
+      - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${REPOSITORY_URI}
+      # Gitコミットハッシュの最初の7文字をイメージタグとして使用
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+
+  build:
+    commands:
+      - echo "Building the Docker image..."
+      # Dockerイメージをビルドし、ECRのURIとlatestタグを付与
+      - docker build -t ${REPOSITORY_URI}:latest .
+      # 同じイメージにコミットハッシュタグも付与
+      - docker tag ${REPOSITORY_URI}:latest ${REPOSITORY_URI}:${IMAGE_TAG}
+
+  post_build:
+    commands:
+      - echo "Pushing the Docker image..."
+      # latestタグのイメージをプッシュ
+      - docker push ${REPOSITORY_URI}:latest
+      # コミットハッシュタグのイメージもプッシュ
+      - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
+      - echo "Build completed on $(date)"
+      - echo "Creating imagedefinitions.json..."
+      # imagedefinitions.json を生成
+      # "name" の値は、ECSタスク定義で定義するコンテナ名と一致させる必要があります。
+      - |
+        echo '[
+          {
+            "name": "api-container",
+            "imageUri": "'${REPOSITORY_URI}':'${IMAGE_TAG}'"
+          }
+        ]' > imagedefinitions.json
+      - echo "imagedefinitions.json created."
+
+artifacts:
+  files:
+    - imagedefinitions.json
