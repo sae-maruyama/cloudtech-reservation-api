@@ -35,7 +35,7 @@ phases:
       - docker push ${REPOSITORY_URI}:latest
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
       - echo "Build completed on $(date)"
-      - echo "Creating imageDetail.json..."
+      - echo "Creating imageDetail.json...."
       - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG} > imageDetail.json
       - echo "imageDetail.json created."
 artifacts:
