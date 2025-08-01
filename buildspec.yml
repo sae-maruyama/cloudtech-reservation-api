@@ -30,24 +30,18 @@ phases:
 
   post_build:
     commands:
+      # (このセクションは変更なし。Dockerイメージのプッシュはそのまま行います)
       - echo "Pushing the Docker image..."
-      # latestタグのイメージをプッシュ
       - docker push ${REPOSITORY_URI}:latest
-      # コミットハッシュタグのイメージもプッシュ
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
       - echo "Build completed on $(date)"
-      - echo "Creating imagedefinitions.json..."
-      # imagedefinitions.json を生成
-      # "name" の値は、ECSタスク定義で定義するコンテナ名と一致させる必要があります。
-      - |
-        echo '[
-          {
-            "name": "api-container",
-            "imageUri": "'${REPOSITORY_URI}':'${IMAGE_TAG}'"
-          }
-        ]' > imagedefinitions.json
-      - echo "imagedefinitions.json created."
-
+      # imageDetail.json を生成するコマンドに変更
+      - echo "Creating imageDetail.json..."
+      - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG} > imageDetail.json
+      - echo "imageDetail.json created."
 artifacts:
   files:
-    - imagedefinitions.json
+    # 出力アーティファクトをimagedefinitions.jsonから変更
+    - appspec.yml
+    - taskdef.json
+    - imageDetail.json
