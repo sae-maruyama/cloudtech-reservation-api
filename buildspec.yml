@@ -28,7 +28,7 @@ phases:
       # 同じイメージにコミットハッシュタグも付与
       - docker tag ${REPOSITORY_URI}:latest ${REPOSITORY_URI}:${IMAGE_TAG}
 
-post_build:
+  post_build:
    commands:
       - echo "Tagging and pushing the Docker image..."
       - docker tag ${REPOSITORY_URI}:${IMAGE_TAG} ${REPOSITORY_URI}:latest
