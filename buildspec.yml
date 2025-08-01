@@ -28,14 +28,13 @@ phases:
       # 同じイメージにコミットハッシュタグも付与
       - docker tag ${REPOSITORY_URI}:latest ${REPOSITORY_URI}:${IMAGE_TAG}
 
-  post_build:
-    commands:
-      # (このセクションは変更なし。Dockerイメージのプッシュはそのまま行います)
-      - echo "Pushing the Docker image..."
+post_build:
+   commands:
+      - echo "Tagging and pushing the Docker image..."
+      - docker tag ${REPOSITORY_URI}:${IMAGE_TAG} ${REPOSITORY_URI}:latest
       - docker push ${REPOSITORY_URI}:latest
       - docker push ${REPOSITORY_URI}:${IMAGE_TAG}
       - echo "Build completed on $(date)"
-      # imageDetail.json を生成するコマンドに変更
       - echo "Creating imageDetail.json..."
       - printf '{"ImageURI":"%s"}' ${REPOSITORY_URI}:${IMAGE_TAG} > imageDetail.json
       - echo "imageDetail.json created."
