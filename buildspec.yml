@@ -40,7 +40,7 @@ phases:
       - echo "imageDetail.json created."
 artifacts:
   files:
-    # 出力アーティファクトをimagedefinitions.jsonから変更!
+    # 出力アーティファクトをimagedefinitions.jsonから変更
     - appspec.yml
     - taskdef.json
     - imageDetail.json
