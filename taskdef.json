@@ -36,7 +36,7 @@
     "taskRoleArn": "arn:aws:iam::166855511114:role/ecsTaskExecutionRole",
     "executionRoleArn": "arn:aws:iam::166855511114:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "revision": 2,
+    "revision": 3,
     "volumes": [],
     "status": "ACTIVE",
     "requiresAttributes": [
@@ -82,6 +82,6 @@
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
     },
-    "registeredAt": "2025-07-30T14:38:12.098Z",
-    "registeredBy": "arn:aws:sts::166855511114:assumed-role/AWSCodePipelineServiceRole-ap-northeast-1-api-pipeline/1753886291731"
+    "registeredAt": "2025-08-01T10:14:43.909Z",
+    "registeredBy": "arn:aws:iam::166855511114:user/Administrator"
 }
